@@ -1,0 +1,17 @@
+# Virtual Environment
+backend/.venv/
+
+# Node Modules
+frontend/node_modules/
+backend/node_modules/
+
+# Temporary Files
+output - Copy.json
+output.txt
+
+# Compiled Python Files
+backend/__pycache__/
+
+# Build Artifacts
+dist/
+build/
