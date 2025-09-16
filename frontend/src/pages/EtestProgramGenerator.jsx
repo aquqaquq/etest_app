@@ -166,13 +166,15 @@ export default function EtestProgramGenerator() {
               ) : (
                 <div className="border rounded-lg h-40 overflow-auto p-2 bg-white">
                   <div className="flex flex-col" style={{ maxHeight: '20rem', overflowY: 'auto' }}>
-                    {mods.map((m) => (
-                      <div key={m} className="flex items-center gap-2 px-2 py-1 border-b">
+                    {mods.map((m, index) => (
+                      <div key={m.name + index} className="flex items-center gap-2 px-2 py-1 border-b">
                         <input
                           type="checkbox"
                           onChange={() => {}}
                         />
-                        <span className="font-mono text-sm">{m}</span>
+                        <span className="font-mono text-sm">
+                          {m.name} (x: {m.x}, y: {m.y})
+                        </span>
                       </div>
                     ))}
                   </div>

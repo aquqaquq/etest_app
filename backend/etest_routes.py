@@ -82,11 +82,14 @@ def device_mods():
             # ignore unknown devices; could also collect to 'missing'
             continue
         mods = node.get("mod") or []
-        # Only include non-empty strings
+        # Include mods as objects with `name`, `x`, and `y`
         for m in mods:
-            if not isinstance(m, str) or not m.strip():
+            if not isinstance(m, dict) or "name" not in m:
                 continue
-            mod_sources.setdefault(m, set()).add(dev)
+            mod_name = m["name"].strip()
+            if not mod_name:
+                continue
+            mod_sources.setdefault(mod_name, set()).add(dev)
 
     # Format output
     mods_list = [{"name": m, "devices": sorted(list(srcs))}
