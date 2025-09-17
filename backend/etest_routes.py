@@ -3,6 +3,10 @@ from flask import Blueprint, request, jsonify, current_app
 import json
 import os
 from typing import Optional
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 etest_bp = Blueprint("etest", __name__, url_prefix="/api/etest")
 
@@ -42,7 +46,13 @@ def list_devices():
     except Exception as e:
         return jsonify({"error": str(e), "json_path": resolved}), 400
 
-    devices = [{"name": k, "prb": v.get("prb")} for k, v in data.items()]
+    devices = []
+    for k, v in data.items():
+        waf = v.get("waf", [])
+        if waf:
+            logging.debug(f"Device: {k}, Wafer Coordinates: {waf}")
+        devices.append({"name": k, "prb": v.get("prb"), "waf": waf})
+
     # Sort for nice UX
     devices.sort(key=lambda d: d["name"])
     return jsonify({"devices": devices, "json_path": resolved})
@@ -54,10 +64,10 @@ def device_mods():
       "devices": ["DEVKEY1", "DEVKEY2", ...],
       "json_path": "/custom/path/output.json"   # optional
     }
-    Returns all unique mods and which devices contributed them.
+        Returns all unique mods with coordinates (if present) and which devices contributed them.
     Response:
     {
-      "mods": [{"name":"c9fd_998b","devices":["DEVKEY1","DEVKEY2"]}, ...],
+            "mods": [{"name":"c9fd_998b","x": 14000, "y": 12625, "devices":["DEVKEY1","DEVKEY2"]}, ...],
       "selected_count": 2
     }
     """
@@ -74,8 +84,10 @@ def device_mods():
     except Exception as e:
         return jsonify({"error": str(e), "json_path": resolved}), 400
 
-    # Build reverse index: mod -> set(devices)
+    # Build reverse index: mod -> set(devices) and capture coordinates
     mod_sources = {}
+    mod_coords = {}  # first-seen coords across all selected devices
+    mod_device_coords = {}  # per-device coords: {mod: {dev: {x,y}}}
     for dev in selected:
         node = data.get(dev)
         if not node:
@@ -90,15 +102,40 @@ def device_mods():
             if not mod_name:
                 continue
             mod_sources.setdefault(mod_name, set()).add(dev)
+            # capture coordinates from the first occurrence; if later occurrences disagree, keep the first
+            if mod_name not in mod_coords:
+                x = m.get("x")
+                y = m.get("y")
+                if isinstance(x, (int, float)) and isinstance(y, (int, float)):
+                    mod_coords[mod_name] = {"x": x, "y": y}
+            # also record per-device coordinates
+            x = m.get("x")
+            y = m.get("y")
+            if isinstance(x, (int, float)) and isinstance(y, (int, float)):
+                mod_device_coords.setdefault(mod_name, {})[dev] = {"x": x, "y": y}
 
     # Format output
-    mods_list = [{"name": m, "devices": sorted(list(srcs))}
-                 for m, srcs in mod_sources.items()]
+    mods_list = []
+    single_dev = selected[0] if len(selected) == 1 else None
+    for m, srcs in mod_sources.items():
+        info = {"name": m, "devices": sorted(list(srcs))}
+        # Prefer coords for the single selected device, if only one dev is selected
+        coords = None
+        if single_dev:
+            coords = mod_device_coords.get(m, {}).get(single_dev)
+        if not coords:
+            coords = mod_coords.get(m)
+        if coords:
+            info.update(coords)
+        mods_list.append(info)
     # Sort mods alphabetically for stable UI
     mods_list.sort(key=lambda x: x["name"])
 
+    wafers = {dev: data.get(dev, {}).get("waf", []) for dev in selected}
+    logging.debug("Selected Devices: %s", selected)
+    logging.debug("Wafers Data: %s", wafers)
     return jsonify({
         "mods": mods_list,
-        "selected_count": len(selected),
-        "json_path": resolved
+        "wafers": wafers,
+        "selected_count": len(selected)
     })
