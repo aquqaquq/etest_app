@@ -132,10 +132,21 @@ def device_mods():
     mods_list.sort(key=lambda x: x["name"])
 
     wafers = {dev: data.get(dev, {}).get("waf", []) for dev in selected}
+    # Include wafer metadata (e.g., flat location/angle) for notch rendering
+    wafer_meta = {}
+    for dev in selected:
+        wafer_info = (data.get(dev) or {}).get("wafer") or {}
+        # Only include selected fields we currently need
+        meta = {
+            "flatLocation": wafer_info.get("flatLocation"),
+            "flatAngle_deg": wafer_info.get("flatAngle_deg"),
+        }
+        wafer_meta[dev] = meta
     logging.debug("Selected Devices: %s", selected)
     logging.debug("Wafers Data: %s", wafers)
     return jsonify({
         "mods": mods_list,
         "wafers": wafers,
+        "waferMeta": wafer_meta,
         "selected_count": len(selected)
     })

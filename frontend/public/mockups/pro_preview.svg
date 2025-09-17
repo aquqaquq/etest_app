@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+    <filter id="card" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style><![CDATA[
+      .title { font: 700 26px 'Segoe UI', Roboto, Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 600 18px 'Segoe UI', Roboto, Arial, sans-serif; fill: #0f172a; }
+      .muted { font: 400 14px 'Segoe UI', Roboto, Arial, sans-serif; fill: #475569; }
+      .mono { font: 500 13px 'Cascadia Code', 'Consolas', monospace; fill: #0f172a; }
+      .pill { font: 600 12px 'Segoe UI', Roboto, Arial, sans-serif; fill: #0b5394; }
+      .button { font: 700 18px 'Segoe UI', Roboto, Arial, sans-serif; fill: #fff; }
+      .small { font: 600 12px 'Segoe UI', Roboto, Arial, sans-serif; fill: #1f2937; }
+      .axis { font: 600 12px 'Segoe UI', Roboto, Arial, sans-serif; fill: #1f2937; }
+    ]]></style>
+  </defs>
+
+  <rect width="1440" height="900" fill="url(#bg)"/>
+
+  <!-- Top Nav Bar -->
+  <g>
+    <rect x="0" y="0" width="1440" height="72" fill="#0b1220"/>
+    <text x="48" y="44" fill="#fff" font-family="Segoe UI, Roboto, Arial" font-size="22" font-weight="700">ETest Program Generator</text>
+    <rect x="1220" y="20" rx="8" ry="8" width="180" height="36" fill="#1f2937"/>
+    <text x="1240" y="44" fill="#d1d5db" font-family="Segoe UI, Roboto, Arial" font-size="14">aquq • v0.1 preview</text>
+  </g>
+
+  <!-- Content Grid -->
+  <g transform="translate(48, 104)">
+    <!-- Left: Devices card -->
+    <g filter="url(#card)">
+      <rect x="0" y="0" width="360" height="320" rx="16" fill="#ffffff"/>
+    </g>
+    <text class="subtitle" x="24" y="40">Devices</text>
+    <rect x="24" y="56" width="312" height="232" rx="10" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text class="mono" x="40" y="88">☑ 5CC9001ACET2</text>
+    <text class="mono" x="40" y="116">☐ 5CC9002BCET3</text>
+    <text class="mono" x="40" y="144">☐ 5CC9003ACET1</text>
+    <text class="muted" x="24" y="308">Showing 1 of 23</text>
+
+    <!-- Right column: stacked cards -->
+    <g transform="translate(392, 0)">
+      <!-- Mods card -->
+      <g filter="url(#card)">
+        <rect x="0" y="0" width="480" height="320" rx="16" fill="#ffffff"/>
+      </g>
+      <text class="subtitle" x="24" y="40">Mods</text>
+      <rect x="24" y="56" width="432" height="232" rx="10" fill="#f8fafc" stroke="#e5e7eb"/>
+      <text class="mono" x="40" y="88">☐ c9fd_4017a (x: 3915, y: -50)</text>
+      <text class="mono" x="40" y="116">☐ c9fd_4129a (x: -9760, y: 12674)</text>
+      <text class="mono" x="40" y="144">☐ c9fd_4130b (x: -9760, y: 12624)</text>
+
+      <!-- Wafer + Submit row -->
+      <g transform="translate(0, 352)">
+        <!-- Wafer card -->
+        <g filter="url(#card)">
+          <rect x="0" y="0" width="760" height="420" rx="16" fill="#ffffff"/>
+        </g>
+        <text class="subtitle" x="24" y="40">Wafer Map</text>
+        <!-- Select buttons -->
+        <rect x="24" y="56" rx="8" ry="8" width="120" height="32" fill="#2563eb"/>
+        <text class="small" x="54" y="78" fill="#fff">Select All</text>
+        <rect x="152" y="56" rx="8" ry="8" width="140" height="32" fill="#e5e7eb"/>
+        <text class="small" x="178" y="78" fill="#111827">Unselect All</text>
+
+        <!-- Wafer circle -->
+        <g transform="translate(24, 96)">
+          <circle cx="240" cy="210" r="200" fill="none" stroke="#9aa4b2" stroke-width="2"/>
+          <!-- Grid -->
+          <g stroke="#e5e7eb">
+            <!-- vertical lines -->
+            <line x1="60" y1="50" x2="60" y2="370"/>
+            <line x1="110" y1="50" x2="110" y2="370"/>
+            <line x1="160" y1="50" x2="160" y2="370"/>
+            <line x1="210" y1="50" x2="210" y2="370"/>
+            <line x1="260" y1="50" x2="260" y2="370"/>
+            <line x1="310" y1="50" x2="310" y2="370"/>
+            <line x1="360" y1="50" x2="360" y2="370"/>
+          </g>
+          <g stroke="#e5e7eb">
+            <!-- horizontal lines -->
+            <line x1="30" y1="80" x2="450" y2="80"/>
+            <line x1="30" y1="130" x2="450" y2="130"/>
+            <line x1="30" y1="180" x2="450" y2="180"/>
+            <line x1="30" y1="230" x2="450" y2="230"/>
+            <line x1="30" y1="280" x2="450" y2="280"/>
+            <line x1="30" y1="330" x2="450" y2="330"/>
+          </g>
+          <!-- Axes labels -->
+          <text class="axis" x="60" y="40">1</text>
+          <text class="axis" x="110" y="40">2</text>
+          <text class="axis" x="160" y="40">3</text>
+          <text class="axis" x="210" y="40">4</text>
+          <text class="axis" x="260" y="40">5</text>
+          <text class="axis" x="310" y="40">6</text>
+          <text class="axis" x="360" y="40">7</text>
+
+          <text class="axis" x="20" y="330">2</text>
+          <text class="axis" x="20" y="280">3</text>
+          <text class="axis" x="20" y="230">4</text>
+          <text class="axis" x="20" y="180">5</text>
+          <text class="axis" x="20" y="130">6</text>
+          <text class="axis" x="20" y="80">7</text>
+
+          <!-- Some dies -->
+          <g>
+            <rect x="140" y="100" width="40" height="40" rx="8" fill="#60a5fa" stroke="#1f2937"/>
+            <text class="small" x="160" y="125" fill="#fff">3,6</text>
+            <rect x="190" y="100" width="40" height="40" rx="8" fill="#60a5fa" stroke="#1f2937"/>
+            <text class="small" x="210" y="125" fill="#fff">4,6</text>
+            <rect x="240" y="100" width="40" height="40" rx="8" fill="#60a5fa" stroke="#1f2937"/>
+            <text class="small" x="260" y="125" fill="#fff">5,6</text>
+            <rect x="190" y="150" width="40" height="40" rx="8" fill="#2563eb" stroke="#1f2937"/>
+            <text class="small" x="210" y="175" fill="#fff">4,5</text>
+          </g>
+        </g>
+
+        <!-- Submit Panel -->
+        <g transform="translate(560, 0)">
+          <g filter="url(#card)">
+            <rect x="0" y="0" width="180" height="420" rx="16" fill="#ffffff"/>
+          </g>
+          <text class="small" x="18" y="40">Skywater initial</text>
+          <rect x="18" y="52" width="144" height="40" rx="8" fill="#f8fafc" stroke="#e5e7eb"/>
+          <text class="muted" x="26" y="78">Enter initials</text>
+          <rect x="18" y="112" width="144" height="56" rx="12" fill="#16a34a"/>
+          <text class="button" x="56" y="148">Submit</text>
+          <text class="muted" x="18" y="190">Selected dies: 26</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Footer Note -->
+  <text class="muted" x="48" y="860">Preview mockup • Colors: Slate/Blue/Green • Typography: Segoe UI</text>
+</svg>

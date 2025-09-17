@@ -9,16 +9,20 @@ import NavBar from './components/NavBar'
 
 export default function App() {
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', margin: 16 }}>
+    <div className="app-shell">
       <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/python" element={<PythonTask />} />
-        <Route path="/c" element={<CTask />} />
-        <Route path="/devices" element={<DeviceLookup />} />
-        <Route path="/etest" element={<EtestProgramGenerator />} />
-        <Route path="*" element={<div>Not found</div>} />
-      </Routes>
+      <main className="app-main">
+        <div className="container">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/python" element={<PythonTask />} />
+            <Route path="/c" element={<CTask />} />
+            <Route path="/devices" element={<DeviceLookup />} />
+            <Route path="/etest" element={<EtestProgramGenerator />} />
+            <Route path="*" element={<div>Not found</div>} />
+          </Routes>
+        </div>
+      </main>
     </div>
   )
 }
