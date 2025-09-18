@@ -24,7 +24,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-
 .nav-link:hover { color: #fff; }
 
 .app-main { flex: 1; }
-.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+.container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
 
 /* Panels */
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }

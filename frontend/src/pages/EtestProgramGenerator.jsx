@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "";
 
@@ -239,7 +239,20 @@ export default function EtestProgramGenerator() {
   const [currentDevice, setCurrentDevice] = useState("");
   const [selectedDies, setSelectedDies] = useState(new Set());
   const [skywaterInitial, setSkywaterInitial] = useState("");
+  const [deviceSuffix, setDeviceSuffix] = useState("");
   const hasSelection = !!selectedDevice;
+  const devicePrefix = `${selectedDevice || currentDevice?.name || ''}_`;
+  const prefixRef = useRef(null);
+  const [prefixPadPx, setPrefixPadPx] = useState(28);
+  useEffect(() => {
+    // measure prefix width to pad the input so text starts after prefix
+    if (prefixRef.current) {
+      const px = Math.ceil(prefixRef.current.offsetWidth) + 14; // +14px breathing room
+      setPrefixPadPx(px);
+    } else {
+      setPrefixPadPx(28);
+    }
+  }, [devicePrefix]);
 
   // Load device list (already filtered by backend to non-empty mods)
   useEffect(() => {
@@ -328,13 +341,19 @@ export default function EtestProgramGenerator() {
 
   function handleSubmit() {
     const dies = Array.from(selectedDies);
+    const deviceInput = `${devicePrefix}${deviceSuffix || ""}`;
     const payload = {
       device: selectedDevice || currentDevice?.name,
       skywaterInitial,
+      device_input: deviceInput,
       dies,
     };
     // Placeholder: wire to backend when endpoint is defined
     console.log("Submit payload:", payload);
+    if (!deviceSuffix) {
+      alert('Please enter the extension after the device prefix.');
+      return;
+    }
     if (!skywaterInitial) {
       alert("Please enter Skywater initial before submitting.");
       return;
@@ -354,83 +373,87 @@ export default function EtestProgramGenerator() {
         <div>Loading device list…</div>
       ) : (
         <>
-          {/* Filter card */}
-          <div className="card">
-            <div className="card-header">Filter devices</div>
-            <div className="card-body">
-              <div className="row" style={{ alignItems: 'center' }}>
-                <input
-                  type="text"
-                  placeholder="Type to filter… (e.g., 5CC9 8000)"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="input grow"
-                />
-                <button
-                  onClick={() => { setQuery(""); setSelectedDevice(""); setMods([]); setCurrentDevice(""); setSelectedDies(new Set()); }}
-                  className="btn"
-                >
-                  Clear
-                </button>
-              </div>
-              <div className="mt-2" style={{ fontSize: 12, color: '#64748b' }}>
-                Showing {filteredDevices.length} of {devices.length}
+          {/* Filter card now stretches full width (no right spacer) */}
+          <div className="row" style={{ alignItems: 'stretch' }}>
+            <div className="col" style={{ flex: '1 1 auto', minWidth: 0 }}>
+              <div className="card" style={{ width: '100%' }}>
+                <div className="card-header">Filter devices</div>
+                <div className="card-body">
+                  <div className="row" style={{ alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="Type to filter… (e.g., 5CC9 8000)"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      className="input grow"
+                    />
+                    <button
+                      onClick={() => { setQuery(""); setSelectedDevice(""); setMods([]); setCurrentDevice(""); setSelectedDies(new Set()); setDeviceSuffix(""); setSkywaterInitial(""); }}
+                      className="btn"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <div className="mt-2" style={{ fontSize: 12, color: '#64748b' }}>
+                    Showing {filteredDevices.length} of {devices.length}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Device + Mods cards */}
-          <div className="row">
+          {/* Device + Mods row now mirrors Wafer+Submit structure for exact right-edge alignment */}
+          <div className="row" style={{ alignItems: 'stretch' }}>
             <div className="card grow">
-              <div className="card-header">Device</div>
-              <div className="card-body">
-                <div style={{ maxHeight: '20rem', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 8 }}>
-                  {filteredDevices.map((key) => {
-                    const isChecked = selectedDevice === key;
-                    return (
-                      <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: '1px solid var(--border)' }}>
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => {
-                            const newSelection = isChecked ? "" : key;
-                            setSelectedDevice(newSelection);
-                            if (newSelection) {
-                              handleOk(newSelection);
-                            } else {
-                              setMods([]);
-                              setCurrentDevice("");
-                              setSelectedDies(new Set());
-                            }
-                          }}
-                        />
-                        <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13 }}>{key}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+                  <div className="card-header">Device</div>
+                  <div className="card-body">
+                    <div style={{ maxHeight: '20rem', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 8 }}>
+                      {filteredDevices.map((key) => {
+                        const isChecked = selectedDevice === key;
+                        return (
+                          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 4px', borderBottom: '1px solid var(--border)' }}>
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                const newSelection = isChecked ? "" : key;
+                                setSelectedDevice(newSelection);
+                                if (newSelection) {
+                                  handleOk(newSelection);
+                                } else {
+                                  setMods([]);
+                                  setCurrentDevice("");
+                                  setSelectedDies(new Set());
+                                }
+                              }}
+                            />
+                            <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13 }}>{key}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
             </div>
 
             {hasSelection && (
               <div className="card grow">
-                <div className="card-header">Mods</div>
-                <div className="card-body">
-                  {mods.length === 0 ? (
-                    <div style={{ color: '#334155' }}>No mods.</div>
-                  ) : (
-                    <div style={{ maxHeight: '20rem', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 8 }}>
-                      {mods.map((m, index) => (
-                        <div key={m.name + index} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 4px', borderBottom: '1px solid var(--border)' }}>
-                          <input type="checkbox" onChange={() => {}} />
-                          <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13 }}>
-                            {m.name} (x: {m.x ?? ''}, y: {m.y ?? ''})
-                          </span>
+                    <div className="card-header">Mods</div>
+                    <div className="card-body">
+                      {mods.length === 0 ? (
+                        <div style={{ color: '#334155' }}>No mods.</div>
+                      ) : (
+                        <div style={{ maxHeight: '20rem', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 8 }}>
+                          {mods.map((m, index) => (
+                            <div key={m.name + index} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 4px', borderBottom: '1px solid var(--border)' }}>
+                              <input type="checkbox" onChange={() => {}} />
+                              <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: 13 }}>
+                                {m.name} (x: {m.x ?? ''}, y: {m.y ?? ''})
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  )}
-                </div>
               </div>
             )}
           </div>
@@ -498,9 +521,51 @@ export default function EtestProgramGenerator() {
               </div>
 
               {/* Submit */}
-              <div className="card" style={{ width: '32%' }}>
+              <div className="card" style={{ flex: '0 0 280px', width: 280 }}>
                 <div className="card-header">Submit</div>
                 <div className="card-body">
+                  <label className="mb-2" style={{ fontSize: 12, color: '#334155' }}>Device input</label>
+                  <div className="mb-2" style={{ fontSize: 12, color: '#64748b' }}>
+                    Original device:&nbsp;
+                    <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+                      {selectedDevice || currentDevice?.name || ''}
+                    </span>
+                  </div>
+                  {/* Single input with left-adorned, non-editable prefix */}
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <span
+                      ref={prefixRef}
+                      style={{
+                        position: 'absolute',
+                        left: 12,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#64748b',
+                        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                        pointerEvents: 'none',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {devicePrefix || 'device_'}
+                    </span>
+                    <input
+                      type="text"
+                      value={deviceSuffix}
+                      onChange={(e) => setDeviceSuffix(e.target.value)}
+                      placeholder="type extension"
+                      className="input"
+                      style={{ paddingLeft: prefixPadPx, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}
+                      disabled={!selectedDevice && !currentDevice?.name}
+                    />
+                  </div>
+                  {!deviceSuffix && (
+                    <div className="mt-2" style={{ fontSize: 12, color: '#64748b' }}>Enter an extension to complete the value.</div>
+                  )}
+                  {/* Full preview */}
+                  <div className="mt-2" style={{ fontSize: 12, color: '#334155' }}>
+                    Full value:&nbsp;
+                    <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{`${devicePrefix}${deviceSuffix || ''}`}</span>
+                  </div>
                   <label className="mb-2" style={{ fontSize: 12, color: '#334155' }}>Skywater initial</label>
                   <input
                     type="text"
